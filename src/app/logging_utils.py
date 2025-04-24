@@ -1,4 +1,4 @@
-from schema import InputData
+from app.schema import InputData
 import pandas as pd
 import os
 import re

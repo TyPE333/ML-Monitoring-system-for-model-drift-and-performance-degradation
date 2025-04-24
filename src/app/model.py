@@ -1,6 +1,6 @@
 import joblib
 import pandas as pd
-from schema import InputData  # Import your Pydantic schema
+from app.schema import InputData  # Import your Pydantic schema
 
 
 def load_model(model_path: str) -> object:

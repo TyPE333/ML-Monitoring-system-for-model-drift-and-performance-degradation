@@ -2,11 +2,10 @@ from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from schema import InputData, PredictionResponse
-from model import load_model, get_prediction
-from logging_utils import log_prediction
-from constants import MODEL_PATH
-from constants import LOG_FILE_PATH
+from app.schema import InputData, PredictionResponse
+from app.model import load_model, get_prediction
+from app.logging_utils import log_prediction
+from app.constants import MODEL_PATH, LOG_FILE_PATH
 
 
 ############################################################ FAST API LIFESPAN FUNCTION ###########################################################################################
