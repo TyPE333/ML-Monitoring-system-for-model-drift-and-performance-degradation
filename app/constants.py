@@ -1,0 +1,2 @@
+MODEL_PATH = "C:/Users/rohan/OneDrive/Documents/Downloads/Resume projects april 2025/ML-Monitoring-system-for-model-drift-and-performance-degradation/models/rfc_model.pkl"
+LOG_FILE_PATH = "C:/Users/rohan/OneDrive/Documents/Downloads/Resume projects april 2025/ML-Monitoring-system-for-model-drift-and-performance-degradation/data/predictions.csv"
