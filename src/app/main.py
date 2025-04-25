@@ -10,6 +10,7 @@ from app.constants import MODEL_PATH, LOG_FILE_PATH
 
 ############################################################ FAST API LIFESPAN FUNCTION ###########################################################################################
 
+#classifier = {"random_forest":load_model(MODEL_PATH)}  # Dictionary to hold the loaded model (use this for unit testing)
 classifier = {}
 
 @asynccontextmanager
@@ -48,7 +49,7 @@ def preprocess_data(input_data: InputData):
 ########################################################### API APPLICATION ###########################################################################################
 # FastAPI application instance with lifespan context manager
 app = FastAPI(lifespan=lifespan)
-
+#app = FastAPI() use this for unit testing
 # Endpoints
 @app.get("/health")
 async def health():
