@@ -1,73 +1,78 @@
 # ML Monitoring System for Model Drift and Performance Degradation
 
-A **FastAPI-based ML inference service** with integrated logging, monitoring of model performance and data drift using **Evidently AI**, and (optional future extension) metrics exposure to **Prometheus/Grafana**.  
-Designed to simulate a real-time, production-ready ML pipeline with full testing and automation.
+A **production-style ML inference service** with built-in monitoring for **data drift** and **prediction drift** using Evidently AI.
+Simulates real-time prediction workloads and supports automated drift report generation and extensibility to observability tools like **Prometheus** and **Grafana**.
 
-📄 **[Planning Doc →](https://docs.google.com/document/d/15xdKI6FNmNespsRWUIYhiF2diZbcUP3nN_nlZnq9X74/edit?usp=sharing)**
-
----
-
-## Project Checklist (Complete)
-
-### 📁 Repo Structure
-- [x] `/app/` module (FastAPI core)
-- [x] `/models/` trained RandomForest model (`model.pkl`)
-- [x] `/data/` for incoming data and prediction logs
-- [x] `/monitoring/` for drift reports and auto-monitoring scripts
-- [x] `/tests/` for unit and integration tests
-- [x] `simulate_incoming_data.py` (real-time data simulator)
-- [x] `requirements.txt`
+> Designed to reflect best practices in model serving, schema validation, drift detection, and modular MLOps architecture.
 
 ---
 
-### 🧱 Core Modules
-- [x] `main.py` – FastAPI service & endpoints
-- [x] `model.py` – Model loading & prediction logic
-- [x] `schema.py` – Input/output schema validation (Pydantic)
-- [x] `logging_utils.py` – Prediction logging utility
-- [x] `generate_drift_report.py` – Data drift detection
-- [x] `generate_prediction_drift_report.py` – Prediction drift detection
-- [x] `auto_monitoring_loop.py` – Automated drift report generation loop
+## Key Features
+
+* ⚙️ **FastAPI-powered inference server** with Pydantic schema validation and test coverage
+* 🔁 **Real-time simulation loop** that mimics incoming prediction traffic
+* 📈 **Evidently AI-based drift detection** for both input features and model predictions
+* 🧪 **100% unit and integration test coverage** using `pytest`
+* 🔄 **Automated report refresh** every N seconds with CLI control
+* 🧰 Modular design extensible to **Prometheus metrics** and **Grafana dashboards**
 
 ---
 
-### 🚀 API Functionality
-- [x] `/predict` POST endpoint (model inference)
-- [x] `/health` GET endpoint (API health check)
-- [x] Manual Swagger UI tests
-- [x] Timestamped prediction responses
-- [x] Request and response logging to `predictions.csv`
+## Architecture Overview
+
+```text
+                +-------------------------+
+                |  Real-time Data Stream  |
+                +-----------+-------------+
+                            |
+          +----------------v------------------+
+          |      FastAPI Inference Server      |
+          |  /predict       /health            |
+          +--------+---------------------------+
+                   |
+         +---------v---------+
+         | RandomForestModel |
+         +---------+---------+
+                   |
+            +------v------+
+            | predictions |
+            +-------------+
+                   |
+       +-----------v------------+
+       | auto_monitoring_loop.py|
+       | (Evidently drift check)|
+       +-----------+------------+
+                   |
+          +--------v--------+
+          |  HTML Reports   |
+          |   (every 5 min) |
+          +-----------------+
+```
 
 ---
 
-### 🧪 Testing & Evaluation
-- [x] API endpoint tests (`test_api.py`)
-- [x] Schema validation tests (`test_schema.py`)
-- [x] Model loading and prediction tests (`test_model.py`)
-- [x] Simulator integration test (`test_simulator.py`)
-- [x] Full test automation via `pytest`
+## Technologies Used
+
+* **FastAPI** – backend service and endpoints
+* **Scikit-learn** – RandomForest model and prediction logic
+* **Evidently AI** – Drift detection and report generation
+* **Pydantic** – Input/output schema validation
+* **Pytest** – Full unit and integration test suite
+* **Uvicorn** – ASGI server
+* *(Optional)* **Prometheus + Grafana** for observability (future extension)
 
 ---
 
-### 🔥 Monitoring Functionality
-- [x] Data Drift report generation (Evidently AI)
-- [x] Prediction Drift report generation (Evidently AI)
-- [x] Automated periodic refresh of drift reports
-- [ ] (Optional Future) Prometheus integration for real-time drift metrics
-- [ ] (Optional Future) Grafana dashboards
-
----
-
-## 🧰 Development Setup
+## Setup Instructions
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/ML-Monitoring-system-for-model-drift-and-performance-degradation.git
+git clone https://github.com/TyPE333/ML-Monitoring-system-for-model-drift-and-performance-degradation.git
 cd ML-Monitoring-system-for-model-drift-and-performance-degradation
 
 # Set up environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Run the FastAPI server
@@ -76,21 +81,51 @@ uvicorn app.main:app --reload
 
 ---
 
-## 📦 Example Prediction Request (JSON)
+## Example API Request
+
+**POST /predict**
+
 ```json
 {
   "Time": 100000.0,
   "V1": -1.359807,
   "V2": -0.072781,
+  "V3": 2.536346,
   ...
   "V28": 0.021,
   "Amount": 149.62
 }
 ```
 
+**Response:**
+
+```json
+{
+  "prediction": 0,
+  "timestamp": "2025-05-10T10:22:45Z"
+}
+```
+
 ---
 
-## 📈 Drift Monitoring Automation
+## Testing
+
+```bash
+pytest tests/
+```
+
+Covers:
+
+* `/predict` and `/health` endpoints
+* schema validation
+* model prediction logic
+* simulator integration
+
+---
+
+## Drift Monitoring (Auto-Loop)
+
+Generate updated data + prediction drift reports every 5 minutes:
 
 ```bash
 python monitoring/auto_monitoring_loop.py \
@@ -103,10 +138,32 @@ python monitoring/auto_monitoring_loop.py \
   --interval 300
 ```
 
-✅ Generates updated drift reports every 5 minutes automatically.
+Drift reports will be saved/updated in the `monitoring/drift_reports/` folder.
 
 ---
 
-## 📁 Project Status: ✅ Phase 4 Complete
-> Core system is complete.  
-> Future upgrades include live Prometheus metrics, Grafana dashboards, and dynamic online learning support.
+## Repo Highlights
+
+| File / Folder               | Purpose                                     |
+| --------------------------- | ------------------------------------------- |
+| `app/`                      | FastAPI server with routes and core logic   |
+| `models/`                   | Pretrained RandomForest model (`model.pkl`) |
+| `data/`                     | Incoming data and prediction log CSVs       |
+| `monitoring/`               | Drift report generators and loop script     |
+| `tests/`                    | Unit and integration tests                  |
+| `simulate_incoming_data.py` | Fake prediction traffic generator           |
+
+---
+
+## Project Status
+
+| Phase                  | Status          |
+| ---------------------- | --------------- |
+| API + Inference        | ✅ Complete      |
+| Drift detection        | ✅ Complete      |
+| Automated report loop  | ✅ Complete      |
+| Unit tests             | ✅ 100% coverage |
+| Prometheus integration | ⏳ Planned       |
+| Grafana dashboard      | ⏳ Planned       |
+
+---
